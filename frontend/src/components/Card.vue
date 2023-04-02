@@ -8,7 +8,9 @@
                 </span>
             </p>
             <div class="d-flex justify-content-between align-items-center">
-                <button class="btn btn-primary">구입하기</button>
+                <button class="btn btn-primary" @click="addToCart(item.id)">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                </button>
                 <small class="price text-body-secondary">
                     {{ lib.getNumberFormatted(item.price) }} 원
                 </small>
@@ -22,6 +24,7 @@
 
 <script>
 import lib from "@/sciprts/lib";
+import axios from "axios";
 
 export default{
     name: "Card",
@@ -29,7 +32,13 @@ export default{
         item: Object,
     },
     setup() {
-        return {lib}
+        const addToCart = (itemId) =>{
+            axios.post(`/api/cart/items/${itemId}`).then((res)=>{
+                console.log(res,'succes');
+            })
+        };
+
+        return {lib,addToCart}
     }
 }
 </script>
