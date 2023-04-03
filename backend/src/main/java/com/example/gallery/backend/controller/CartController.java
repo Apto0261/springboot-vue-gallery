@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +49,7 @@ public class CartController {
     }
 
     @PostMapping("/api/cart/items/{itemId}")
-    public ResponseEntity<Cart> pushCartItem(@PathVariable("itemId") int itemId,@CookieValue(value = "token", required = false) String token){
+    public ResponseEntity<Cart> pushCartItem(@PathVariable("itemId") int itemId, @CookieValue(value = "token", required = false) String token){
         
         if(!jwtService.isValid(token)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -67,5 +68,20 @@ public class CartController {
 
         return new ResponseEntity<>(HttpStatus.OK);
         
+    }
+
+    @DeleteMapping("/api/cart/items/{itemId}")
+    public ResponseEntity<Cart> removeCartItem(@PathVariable("itemId") int itemId, @CookieValue(value = "token", required = false) String token){
+
+        if(!jwtService.isValid(token)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        int memberId = jwtService.getId(token);
+
+        Cart cart = cartRepository.findByMemberIdAndItemId(memberId,itemId);
+        
+        cartRepository.delete(cart);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
